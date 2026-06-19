@@ -10,10 +10,22 @@ def displayMenu():
     print('----------------------------')
 
 
+# ===== Add Expense =====
 def add_expense(expenses):
     """Prompts the user for expense details and adds it to the list."""
     print('\n--- Add a new Expense ---')
-    amount = input('Enter amount: ')
+    
+    while True:
+        try:
+            amount_input = input('Enter amount: ')
+            amount = float(amount_input)
+            if amount <= 0:
+                print('Amount must be greate than 0.')
+                continue
+            break
+        except ValueError:
+            print('Invalid input! Please enter a valid number.')
+
     category = input('Enter category (e.g., Food, Transport): ')
     description = input('Enter description: ')
     date = input('Enter date (YYYY-MM-DD): ')
@@ -29,6 +41,18 @@ def add_expense(expenses):
     # Add the dictionary to our list
     expenses.append(expense)
     print('Expense added successfully!')
+
+
+# ===== View All Expenses =====
+def view_expenses(expenses):
+    """Displays all expenses currently in the list"""
+    print('\n--- All Expenses ---')
+    if len(expenses) == 0:
+        print('No expenses recoreded yet.')
+        return
+    
+    for expense in expenses:
+        print(expense)
     
 def main():
     """Main entry point for the TRACKIFY"""
@@ -44,7 +68,7 @@ def main():
         if choice == '1':
             add_expense(expenses)
         elif choice == '2':
-            print('View All Expenses selected (Coming soon!).')
+            view_expenses(expenses)
         elif choice == '3':
             print('DeleteExpenses selected (Coming soon!).')
         elif choice == '4':
