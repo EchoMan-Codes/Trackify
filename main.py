@@ -51,9 +51,15 @@ def view_expenses(expenses):
         print('No expenses recoreded yet.')
         return
     
-    for expense in expenses:
-        print(expense)
+    for index, expense in enumerate(expenses):
+        print(f'Expense #{index + 1}')
+        print(f' Date:          {expense['date']}')
+        print(f' Category:      {expense['category']}')
+        print(f' Amount:        ₹{expense['amount']:.2f}')
+        print(f' Description:   {expense['description']}')
+        print('-' * 20)
     
+# ===== Main Program =====
 def main():
     """Main entry point for the TRACKIFY"""
     print('Welcome to TRACKIFY')
