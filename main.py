@@ -20,7 +20,7 @@ def add_expense(expenses):
             amount_input = input('Enter amount: ')
             amount = float(amount_input)
             if amount <= 0:
-                print('Amount must be greate than 0.')
+                print('Amount must be greater than 0.')
                 continue
             break
         except ValueError:
@@ -47,6 +47,7 @@ def add_expense(expenses):
 def view_expenses(expenses):
     """Displays all expenses currently in the list"""
     print('\n--- All Expenses ---')
+
     if len(expenses) == 0:
         print('No expenses recoreded yet.')
         return
@@ -59,6 +60,32 @@ def view_expenses(expenses):
         print(f' Description:   {expense['description']}')
         print('-' * 20)
     
+
+def delete_expenses(expenses):
+    """Deletes an expense from the list by its index"""
+    if len(expenses) == 0:
+        print('\nNo expenses to delete.')
+        return
+    
+    view_expenses(expenses)
+
+    try:
+        index_input = input('Enter the expense number to delete (or 0 to cancel): ')
+        index = int(index_input)
+
+        if index == 0:
+            print('Deletion cancelled.')
+            return
+        
+        if 1 <= index <= len(expenses):
+            deleted_expense = expenses.pop(index - 1)
+            print(f'Successfully deleted expense: {deleted_expense}')
+        else:
+            print('Invalid expense number.')
+    except ValueError:
+        print('Invalid input! Please enter a valid number.')
+
+
 # ===== Main Program =====
 def main():
     """Main entry point for the TRACKIFY"""
