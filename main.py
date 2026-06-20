@@ -3,6 +3,13 @@ import os
 
 EXPENSES_FILE = 'expenses.json'
 
+# ==== Clear Screen =====
+def clear_screen():
+    """Clears the terminal screen for a cleaner UI."""
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
+# ==== Display Menu =====
 def displayMenu():
     """Displays the main meny options to the user."""
     print("\n--- TRACKIFY Menu ---")
@@ -15,11 +22,9 @@ def displayMenu():
     print('----------------------------')
 
 
-# ===== Add Expense =====
-def add_expense(expenses):
-    """Prompts the user for expense details and adds it to the list."""
-    print('\n--- Add a new Expense ---')
-    
+# ===== Get Valid Amount =====
+def get_valid_amount():
+    """Prompts the user until a valid positive number is entered."""
     while True:
         try:
             amount_input = input('Enter amount: ')
@@ -30,7 +35,13 @@ def add_expense(expenses):
             break
         except ValueError:
             print('Invalid input! Please enter a valid number.')
+    
 
+# ===== Add Expense =====
+def add_expense(expenses):
+    """Prompts the user for expense details and adds it to the list."""
+    print('\n--- Add a new Expense ---')
+    amount = get_valid_amount()
     category = input('Enter category (e.g., Food, Transport): ')
     description = input('Enter description: ')
     date = input('Enter date (YYYY-MM-DD): ')
@@ -98,8 +109,7 @@ def delete_expenses(expenses):
 def init_storage():
     """Creates the JSON file with an empty list if it doesn't exist."""
     if not os.path.exists(EXPENSES_FILE):
-        with open(EXPENSES_FILE, 'w') as file:
-            json.dump([], file)
+        save_expenses([])   # Reuse our existing save function
 
 
 # ===== Save Expenses =====
@@ -111,9 +121,16 @@ def save_expenses(expenses):
 
 # ==== Load Expenses =====
 def load_expenses():
-    """Loads thhe list of expenses from the JSON file"""
-    with open(EXPENSES_FILE, 'r') as file:
-        return json.load(file)
+    """Loads thhe list of expenses from the JSON file. Handles errors if file is missing or corrupt."""
+    try:
+        with open(EXPENSES_FILE, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        print('Storage file not found. Starting with an empty list.')
+        return []
+    except json.JSONDecodeError:
+        print('Warning: Storage file is corrupted. Starting with an empty list.')
+        return []
 
 
 # ===== Get Monthly Total =====
@@ -178,6 +195,7 @@ def main():
     expenses = load_expenses()
 
     while True:
+        clear_screen()
         displayMenu()
         choice = input('Enter your choice (1-6): ')
 
@@ -197,5 +215,6 @@ def main():
         else:
             print('Invalid choice. Please enter a number from 1 to 6.')
 
+        input('\nPress Enter to continue...')
 if __name__ == '__main__':
     main()
