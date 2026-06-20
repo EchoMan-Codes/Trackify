@@ -108,6 +108,23 @@ def save_expenses(expenses):
     with open(EXPENSES_FILE, 'w') as file:
         json.dump(expenses, file, indent = 4)
 
+
+# ==== Load Expenses =====
+def load_expenses():
+    """Loads thhe list of expenses from the JSON file"""
+    with open(EXPENSES_FILE, 'r') as file:
+        return json.load(file)
+
+
+# ===== Monthly Summary =====
+def get_monthly_total(expenses, year_month):
+    """Calculates the total expenses for a specific YYYY-MM period."""
+    total = 0.0
+    for expense in expenses:
+        if expense['date'].startswith(year_month):
+            total += expense['amount']
+    return total
+
 # ===== Main Program =====
 def main():
     """Main entry point for the TRACKIFY"""
@@ -116,8 +133,8 @@ def main():
     # Ensure our JSON storage file exists
     init_storage()
 
-    # List to store all our expenses dictionaries in memory
-    expenses = []
+    # Load existing expenses from the file into memory
+    expenses = load_expenses()
 
     while True:
         displayMenu()
