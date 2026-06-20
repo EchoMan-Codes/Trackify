@@ -116,7 +116,7 @@ def load_expenses():
         return json.load(file)
 
 
-# ===== Monthly Summary =====
+# ===== Get Monthly Total =====
 def get_monthly_total(expenses, year_month):
     """Calculates the total expenses for a specific YYYY-MM period."""
     total = 0.0
@@ -124,6 +124,47 @@ def get_monthly_total(expenses, year_month):
         if expense['date'].startswith(year_month):
             total += expense['amount']
     return total
+
+
+# ===== Monthly Summary =====
+def display_monthly_summary(expenses):
+    """Displays the total spending for a specific month."""
+    print('\n--- Monthly Summary ---')
+    year_month = input('Enter the month to summarize (YYYY-MM): ')
+
+    total = get_monthly_total(expenses, year_month)
+    print(f'\nTotal spent in {year_month}: ${total:.2f}')
+
+
+# ===== Get Category Spendings Total =====
+def get_category_totals(expenses):
+    """Calculates total expenses grouped by category."""
+    category_totals = {}
+    for expense in expenses:
+        category = expense['category']
+        amount = expense['amount']
+
+        if category in category_totals:
+            category_totals[category] += amount
+        else:
+            category_totals[category] = amount
+
+    return category_totals        
+
+
+# ===== Category-wise Spending =====
+def display_category_report(expenses):
+    """Displays a breakdown of total spending by category."""
+    print('\n--- Category-wise Spending Report ---')
+    if len(expenses) == 0:
+        print('No expenses recorded yet.')
+        return
+    
+    category_totals = get_category_totals(expenses)
+
+    for category, total in category_totals.items():
+        print(f' {category}: ${total:.2f}')
+
 
 # ===== Main Program =====
 def main():
@@ -145,11 +186,11 @@ def main():
         elif choice == '2':
             view_expenses(expenses)
         elif choice == '3':
-            print('DeleteExpenses selected (Coming soon!).')
+            delete_expenses(expenses)
         elif choice == '4':
-            print('Monthly Summaryselected (Coming soon!).')
+            display_monthly_summary(expenses)
         elif choice == '5':
-            print('Category-wise Spending selected (Coming soon!).')
+            display_category_report(expenses)
         elif choice == '6':
             print('Exiting Trackify. Goodbye!')
             break
