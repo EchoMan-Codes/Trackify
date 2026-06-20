@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 EXPENSES_FILE = 'expenses.json'
 
@@ -35,7 +36,18 @@ def get_valid_amount():
             break
         except ValueError:
             print('Invalid input! Please enter a valid number.')
-    
+
+
+# ==== Get Current Date =====
+def get_valid_date():
+    """Prompts the user until a valid YYYY-MM-DD date is entered."""
+    while True:
+        date_str = input('Enter date (YYYY-MM-DD): ')
+        try:
+            valid_date = datetime.strptime(date_str, '%Y-%m-%d')
+        except:
+            print('Invalid date format! Please use YYYY-MM-DD.')
+
 
 # ===== Add Expense =====
 def add_expense(expenses):
@@ -44,7 +56,7 @@ def add_expense(expenses):
     amount = get_valid_amount()
     category = input('Enter category (e.g., Food, Transport): ')
     description = input('Enter description: ')
-    date = input('Enter date (YYYY-MM-DD): ')
+    date = get_valid_date()
 
     # Create a dictionary for the new expense
     expense = {
@@ -96,9 +108,16 @@ def delete_expenses(expenses):
             return
         
         if 1 <= index <= len(expenses):
-            deleted_expense = expenses.pop(index - 1)
-            save_expenses(expenses)
-            print(f'Successfully deleted expense: {deleted_expense}')
+            # Show the user what they are about to delete
+            expense_to_delete = expenses[index - 1]
+            confirm = input(f'Are you sure you want to delete "{expense_to_delete['description']}"? (y/n): ')
+
+            if confirm.lower() == 'y':
+                deleted_expense = expenses.pop(index - 1)
+                save_expenses(expenses)
+                print(f'Successfully deleted expense: {deleted_expense}')
+            else:
+                print('Deletion cancelled.')
         else:
             print('Invalid expense number.')
     except ValueError:
