@@ -1,3 +1,8 @@
+import json
+import os
+
+EXPENSES_FILE = 'expenses.json'
+
 def displayMenu():
     """Displays the main meny options to the user."""
     print("\n--- TRACKIFY Menu ---")
@@ -40,6 +45,7 @@ def add_expense(expenses):
 
     # Add the dictionary to our list
     expenses.append(expense)
+    save_expenses(expenses)
     print('Expense added successfully!')
 
 
@@ -61,6 +67,7 @@ def view_expenses(expenses):
         print('-' * 20)
     
 
+# ===== Delete Expenses =====
 def delete_expenses(expenses):
     """Deletes an expense from the list by its index"""
     if len(expenses) == 0:
@@ -79,6 +86,7 @@ def delete_expenses(expenses):
         
         if 1 <= index <= len(expenses):
             deleted_expense = expenses.pop(index - 1)
+            save_expenses(expenses)
             print(f'Successfully deleted expense: {deleted_expense}')
         else:
             print('Invalid expense number.')
@@ -86,10 +94,27 @@ def delete_expenses(expenses):
         print('Invalid input! Please enter a valid number.')
 
 
+# ===== Initialize Storage =====
+def init_storage():
+    """Creates the JSON file with an empty list if it doesn't exist."""
+    if not os.path.exists(EXPENSES_FILE):
+        with open(EXPENSES_FILE, 'w') as file:
+            json.dump([], file)
+
+
+# ===== Save Expenses =====
+def save_expenses(expenses):
+    """Saves the current list of expenses to the JSON file."""
+    with open(EXPENSES_FILE, 'w') as file:
+        json.dump(expenses, file, indent = 4)
+
 # ===== Main Program =====
 def main():
     """Main entry point for the TRACKIFY"""
     print('Welcome to TRACKIFY')
+
+    # Ensure our JSON storage file exists
+    init_storage()
 
     # List to store all our expenses dictionaries in memory
     expenses = []
