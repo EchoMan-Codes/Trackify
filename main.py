@@ -14,8 +14,9 @@ def clear_screen():
 def displayMenu():
     """Displays the main meny options to the user."""
     print("\n--- TRACKIFY Menu ---")
+    print('\n---- Welcome to Trackify - An Interactive CLI based Expense Tracker ----')
     print('1. Add Expense')
-    print('2.View All Expenese')
+    print('2. View All Expenese')
     print('3. Delete Expense')
     print('4. Monthly Summary')
     print('5. Category-wise Spending')
@@ -28,12 +29,12 @@ def get_valid_amount():
     """Prompts the user until a valid positive number is entered."""
     while True:
         try:
-            amount_input = input('Enter amount: ')
+            amount_input = input('Enter amount: ').strip()
             amount = float(amount_input)
             if amount <= 0:
                 print('Amount must be greater than 0.')
                 continue
-            break
+            return amount
         except ValueError:
             print('Invalid input! Please enter a valid number.')
 
@@ -42,9 +43,10 @@ def get_valid_amount():
 def get_valid_date():
     """Prompts the user until a valid YYYY-MM-DD date is entered."""
     while True:
-        date_str = input('Enter date (YYYY-MM-DD): ')
+        date_str = input('Enter date (YYYY-MM-DD): ').strip()
         try:
             valid_date = datetime.strptime(date_str, '%Y-%m-%d')
+            return valid_date.strftime('%Y-%m-%d')
         except:
             print('Invalid date format! Please use YYYY-MM-DD.')
 
@@ -54,8 +56,8 @@ def add_expense(expenses):
     """Prompts the user for expense details and adds it to the list."""
     print('\n--- Add a new Expense ---')
     amount = get_valid_amount()
-    category = input('Enter category (e.g., Food, Transport): ')
-    description = input('Enter description: ')
+    category = input('Enter category (e.g., Food, Transport): ').strip()
+    description = input('Enter description: ').strip()
     date = get_valid_date()
 
     # Create a dictionary for the new expense
@@ -83,10 +85,14 @@ def view_expenses(expenses):
     
     for index, expense in enumerate(expenses):
         print(f'Expense #{index + 1}')
-        print(f' Date:          {expense['date']}')
-        print(f' Category:      {expense['category']}')
-        print(f' Amount:        ₹{expense['amount']:.2f}')
-        print(f' Description:   {expense['description']}')
+        print(f'  Date:          {expense["date"]}')
+        print(f'  Category:      {expense["category"]}')
+        amount = expense.get("amount")
+        if amount is None:
+            print("  Amount:        N/A")
+        else:
+            print(f'  Amount:        ₹{amount:.2f}')
+        print(f'  Description:   {expense["description"]}')
         print('-' * 20)
     
 
@@ -110,7 +116,7 @@ def delete_expenses(expenses):
         if 1 <= index <= len(expenses):
             # Show the user what they are about to delete
             expense_to_delete = expenses[index - 1]
-            confirm = input(f'Are you sure you want to delete "{expense_to_delete['description']}"? (y/n): ')
+            confirm = input(f'Are you sure you want to delete "{expense_to_delete["description"]}"? (y/n): ')
 
             if confirm.lower() == 'y':
                 deleted_expense = expenses.pop(index - 1)
@@ -169,7 +175,7 @@ def display_monthly_summary(expenses):
     year_month = input('Enter the month to summarize (YYYY-MM): ')
 
     total = get_monthly_total(expenses, year_month)
-    print(f'\nTotal spent in {year_month}: ${total:.2f}')
+    print(f'\nTotal spent in {year_month}: ₹{total:.2f}')
 
 
 # ===== Get Category Spendings Total =====
@@ -199,14 +205,13 @@ def display_category_report(expenses):
     category_totals = get_category_totals(expenses)
 
     for category, total in category_totals.items():
-        print(f' {category}: ${total:.2f}')
+        print(f' {category}: ₹{total:.2f}')
 
 
 # ===== Main Program =====
 def main():
     """Main entry point for the TRACKIFY"""
-    print('Welcome to TRACKIFY')
-
+    
     # Ensure our JSON storage file exists
     init_storage()
 
