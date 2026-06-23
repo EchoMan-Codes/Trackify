@@ -16,11 +16,12 @@ def displayMenu():
     print("\n--- TRACKIFY Menu ---")
     print('\n---- Welcome to Trackify - An Interactive CLI based Expense Tracker ----')
     print('1. Add Expense')
-    print('2. View All Expenese')
-    print('3. Delete Expense')
-    print('4. Monthly Summary')
-    print('5. Category-wise Spending')
-    print('6. Exit')
+    print('2. View All Expenses')
+    print('3. Edit Expense')
+    print('4. Delete Expense')
+    print('5. Monthly Summary')
+    print('6. Category-wise Spending')
+    print('7. Exit')
     print('----------------------------')
 
 
@@ -130,6 +131,67 @@ def delete_expenses(expenses):
         print('Invalid input! Please enter a valid number.')
 
 
+# ===== Edit Expense =====
+def edit_expense(expenses):
+    """Allows the user to modify an existing expense's details."""
+    if len(expenses) == 0:
+        print('\nNo expenses to edit.')
+        return
+
+    view_expenses(expenses)
+
+    try:
+        index_input = input('Enter the expense number to edit (or 0 to cancel): ')
+        index = int(index_input)
+
+        if index == 0:
+            print('Edit cancelled.')
+            return
+
+        if 1 <= index <= len(expenses):
+            expense = expenses[index - 1]
+            print(f'\nEditing Expense #{index}:')
+            print('(Press Enter to keep the current value)\n')
+
+            # Edit amount
+            amount_input = input(f'  Amount [₹{expense["amount"]:.2f}]: ').strip()
+            if amount_input:
+                try:
+                    new_amount = float(amount_input)
+                    if new_amount > 0:
+                        expense['amount'] = new_amount
+                    else:
+                        print('  Amount must be positive. Keeping current value.')
+                except ValueError:
+                    print('  Invalid number. Keeping current value.')
+
+            # Edit category
+            category_input = input(f'  Category [{expense["category"]}]: ').strip()
+            if category_input:
+                expense['category'] = category_input
+
+            # Edit description
+            desc_input = input(f'  Description [{expense["description"]}]: ').strip()
+            if desc_input:
+                expense['description'] = desc_input
+
+            # Edit date
+            date_input = input(f'  Date [{expense["date"]}]: ').strip()
+            if date_input:
+                try:
+                    valid_date = datetime.strptime(date_input, '%Y-%m-%d')
+                    expense['date'] = valid_date.strftime('%Y-%m-%d')
+                except ValueError:
+                    print('  Invalid date format. Keeping current value.')
+
+            save_expenses(expenses)
+            print('\nExpense updated successfully!')
+        else:
+            print('Invalid expense number.')
+    except ValueError:
+        print('Invalid input! Please enter a valid number.')
+
+
 # ===== Initialize Storage =====
 def init_storage():
     """Creates the JSON file with an empty list if it doesn't exist."""
@@ -221,23 +283,25 @@ def main():
     while True:
         clear_screen()
         displayMenu()
-        choice = input('Enter your choice (1-6): ')
+        choice = input('Enter your choice (1-7): ')
 
         if choice == '1':
             add_expense(expenses)
         elif choice == '2':
             view_expenses(expenses)
         elif choice == '3':
-            delete_expenses(expenses)
+            edit_expense(expenses)
         elif choice == '4':
-            display_monthly_summary(expenses)
+            delete_expenses(expenses)
         elif choice == '5':
-            display_category_report(expenses)
+            display_monthly_summary(expenses)
         elif choice == '6':
+            display_category_report(expenses)
+        elif choice == '7':
             print('Exiting Trackify. Goodbye!')
             break
         else:
-            print('Invalid choice. Please enter a number from 1 to 6.')
+            print('Invalid choice. Please enter a number from 1 to 7.')
 
         input('\nPress Enter to continue...')
 if __name__ == '__main__':
